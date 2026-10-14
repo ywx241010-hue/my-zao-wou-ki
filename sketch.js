@@ -337,8 +337,16 @@ function glslFlow() {
 
 // ★★★★★★ 第 4 步 开始 / STEP 4 START：armOpenness（把整个函数换成 Qwen 写的版本 / replace the whole function with Qwen's version）★★★★★★
 function armOpenness(pose) {
-  // 临时版本：永远是一半 / placeholder: always half
-  return 0.5;
+  // 量出双臂张开了多少：0（两只手在一起）到 1（双臂完全张开）之间的数
+  // 参数：pose 是 33 个身体点的数组，编号 11/12 是肩膀，15/16 是手腕
+  let ls = pose[11];
+  let rs = pose[12];
+  let lw = pose[15];
+  let rw = pose[16];
+  // 有任何一个点看不见就返回 0
+  if (!isVisible(ls) || !isVisible(rs) || !isVisible(lw) || !isVisible(rw)) return 0;
+  let shoulders = max(dist(ls.x, ls.y, rs.x, rs.y), 1);
+  return constrain(dist(lw.x, lw.y, rw.x, rw.y) / (shoulders * 3), 0, 1);
 }
 // ★★★★★★ 第 4 步 结束 / STEP 4 END ★★★★★★
 
