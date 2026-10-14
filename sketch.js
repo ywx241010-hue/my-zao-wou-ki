@@ -323,9 +323,14 @@ float noise(vec2 p) {
 
 // ★★★★★★ 第 3 步 开始 / STEP 3 START：glslFlow（把整个函数换成 Qwen 写的版本 / replace the whole function with Qwen's version）★★★★★★
 function glslFlow() {
-  // 临时版本：颜料不流动 / placeholder: the paint doesn't flow
+  // 返回 GLSL 函数 flow(p, t)：先量出噪声的“坡度”，再把方向转 90 度，就变成了漩涡（curl noise，旋度噪声）
   return `vec2 flow(vec2 p, float t) {
-  return vec2(0.0, 0.0);
+  float e = 0.05;
+  float n = noise(p + t);
+  float nx = noise(p + vec2(e, 0.0) + t);
+  float ny = noise(p + vec2(0.0, e) + t);
+  vec2 grad = vec2(nx - n, ny - n) / e;
+  return vec2(grad.y, -grad.x) * 2.0;
 }`;
 }
 // ★★★★★★ 第 3 步 结束 / STEP 3 END ★★★★★★
