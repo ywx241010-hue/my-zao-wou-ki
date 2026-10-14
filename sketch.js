@@ -352,7 +352,15 @@ function armOpenness(pose) {
 
 // ★★★★★★ 第 5 步 开始 / STEP 5 START：soundFromBody（把整个函数换成 Qwen 写的版本 / replace the whole function with Qwen's version）★★★★★★
 function soundFromBody(open, speed) {
-  // 临时版本：声音不跟着身体变化 / placeholder: the sound doesn't follow the body
+  // 让身体控制声音：张开双臂，和弦变亮、稍微变响；画笔动得快，会有轻轻的“刷”的声音
+  // 参数：open 是 0~1（双臂张开的程度），speed 是画笔移动的速度（每帧多少像素）
+  // 声音对象已经存在：padFilter（低通滤波器）、pad（振荡器数组）、swish（噪声）、swishFilter（带通滤波器）
+  padFilter.freq(map(open, 0, 1, 300, 2400), 0.2);
+  for (const osc of pad) {
+    osc.amp(map(open, 0, 1, 0.03, 0.06), 0.5);
+  }
+  swish.amp(map(speed, 0, 40, 0, 0.12, true), 0.1);
+  swishFilter.freq(map(open, 0, 1, 500, 2000), 0.1);
 }
 // ★★★★★★ 第 5 步 结束 / STEP 5 END ★★★★★★
 
