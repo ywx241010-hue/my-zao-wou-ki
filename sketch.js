@@ -306,9 +306,17 @@ function splat(x, y, r, col) {
 
 // ★★★★★★ 第 2 步 开始 / STEP 2 START：glslNoise（把整个函数换成 Qwen 写的版本 / replace the whole function with Qwen's version）★★★★★★
 function glslNoise() {
-  // 临时版本：到处都一样 / placeholder: the same everywhere
-  return `float noise(vec2 p) {
-  return 0.5;
+  // 返回两个 GLSL 函数：hash(p) 和 noise(p)。noise 给出平滑的“噪声”：每个格子的角上有一个随机数，中间的值平滑地变化
+  return `float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float noise(vec2 p) {
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  vec2 u = f * f * (3.0 - 2.0 * f);
+  float a = hash(i);
+  float b = hash(i + vec2(1.0, 0.0));
+  float c = hash(i + vec2(0.0, 1.0));
+  float d = hash(i + vec2(1.0, 1.0));
+  return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
 }`;
 }
 // ★★★★★★ 第 2 步 结束 / STEP 2 END ★★★★★★
